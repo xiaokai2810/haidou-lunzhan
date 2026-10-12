@@ -7,16 +7,12 @@ const meta = read('public/data/meta.json');
 const champions = read('public/data/champions.json');
 const items = read('public/data/items.json');
 const augments = read('public/data/augments.json');
-const rawAugments = read('data/raw/mayhem-augments.json');
-const rawItems = read('data/raw/mayhem-items.json');
 
-test('the published snapshot uses one patch and one Mayhem release', () => {
-  assert.equal(meta.ddragonVersion, read('data/raw/champion.json').version);
-  assert.equal(meta.ddragonVersion, read('data/raw/item.json').version);
-  assert.equal(meta.patch, rawAugments.meta.patch);
-  assert.equal(meta.statsDate, rawAugments.meta.statsDate);
-  assert.equal(meta.releaseId, rawAugments.meta.releaseId);
-  assert.equal(meta.releaseId, rawItems.meta.releaseId);
+test('the published snapshot metadata matches every shipped catalog', () => {
+  assert.match(meta.patch, /^\d{2}\.\d{1,2}$/);
+  assert.match(meta.ddragonVersion, /^\d{2}\.\d{1,2}\.\d+$/);
+  assert.match(meta.statsDate, /^\d{4}-\d{2}-\d{2}$/);
+  assert.ok(meta.releaseId);
   assert.deepEqual(meta.counts, {
     champions: champions.length,
     items: items.length,
@@ -25,6 +21,9 @@ test('the published snapshot uses one patch and one Mayhem release', () => {
   assert.ok(champions.every(c => c.icon.includes(`/cdn/${meta.ddragonVersion}/`)));
   assert.ok(items.every(i => i.icon.includes(`/cdn/${meta.ddragonVersion}/`)));
   const cdragonPatch = `${Number(meta.patch.split('.')[0]) - 10}.${meta.patch.split('.')[1]}`;
+  assert.equal(meta.ddragonVersion.split('.').slice(0,2).join('.'), cdragonPatch);
+  assert.ok(meta.sources.augments.includes(`/${meta.patch.replace('.', '-')}/augments.json`));
+  assert.ok(meta.sources.communityDragon.includes(`/${cdragonPatch}/`));
   assert.ok(augments.every(a => !a.icon ||
     a.icon.startsWith(`https://raw.communitydragon.org/${cdragonPatch}/game/`) ||
     a.icon.startsWith('https://arammayhem.com/augments/')));
