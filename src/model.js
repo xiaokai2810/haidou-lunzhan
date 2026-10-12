@@ -145,5 +145,5 @@ export function computeBuild({ champion, level, augments, items, growth = {}, ta
     : [.44, .38, .18];
   const score = Math.round(weights[0] * offense + weights[1] * defense + weights[2] * utility);
   const grade = score >= 85 ? 'S' : score >= 72 ? 'A' : score >= 58 ? 'B' : score >= 44 ? 'C' : 'D';
-  return { base, stats: result, physicalDps, magicBurst, effectiveHpPhysical, effectiveHpMagic, offense, defense, utility, score, grade, coverage, modeledAugments, notes, targetArmor, targetMr };
+  return { base, stats: result, damageMultiplier: 1 + damagePct, physicalDps, magicBurst, effectiveHpPhysical, effectiveHpMagic, offense, defense, utility, score, grade, coverage, modeledAugments, notes, targetArmor, targetMr };
 }

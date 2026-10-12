@@ -1,0 +1,74 @@
+html { scroll-padding-top: 20px; }
+body {
+  background:
+    radial-gradient(circle at 22% -10%, #163c47 0, transparent 27%),
+    radial-gradient(circle at 93% 30%, #382b293b 0, transparent 25%),
+    #080d15;
+}
+button, a, .slot, .result { -webkit-tap-highlight-color: transparent; }
+button { transition: border-color .2s, background-color .2s, color .2s, transform .2s; }
+.intro { position: relative; }
+.intro::after {
+  content: 'M';
+  position: absolute;
+  right: 0;
+  top: 15px;
+  z-index: -1;
+  color: #61999b0a;
+  font: 800 clamp(200px, 27vw, 400px) 'Barlow Condensed', sans-serif;
+  line-height: 1;
+  pointer-events: none;
+}
+.intro-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  margin-top: 23px;
+  padding: 12px 15px;
+  border: 1px solid #65aea9;
+  color: #c8f6ee;
+  background: #16353a91;
+  font-size: 12px;
+  font-weight: 700;
+}
+.intro-cta:hover { border-color: #8ae3d8; background: #215053; transform: translateY(-2px); }
+.intro-cta span { font-size: 17px; }
+.steps { margin-top: 30px; }
+.section-head h2 small { color: #a3bac0; }
+.hint, .method p, .caption, .insight p { font-size: 12px; }
+.slot.empty span, .slot-content strong, .hero-controls label { font-size: 13px; }
+.slot-content small, .item-note, .growth-row small { font-size: 11px; }
+.remove { width: 30px; height: 30px; top: 1px; right: 1px; font-size: 20px; }
+.filters button { min-height: 34px; font-size: 12px; }
+.dialog-head>button, .close { min-width: 36px; min-height: 36px; }
+.method>div { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.method article { padding: 15px 17px; border: 1px solid #2d454b; background: #101c25; }
+.method article b { font-size: 13px; }
+.method p { line-height: 1.85; }
+.method .legal { background: none; border: 0; padding: 17px 0 0; }
+.analysis { scrollbar-gutter: stable; }
+.analysis .primary, .hero-controls button { min-height: 43px; }
+.loading { min-height: 60vh; }
+@media (max-width: 900px) {
+  .analysis { margin: 30px 0 0; max-height: none; }
+  .workspace>.analysis { scroll-margin-top: 15px; }
+  .method>div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .intro { padding: 39px 0 31px; }
+  .intro p { font-size: 13px; }
+  .intro-cta { width: 100%; font-size: 13px; }
+  .steps { gap: 6px 8px; line-height: 1.5; }
+  .steps em { width: 8px; }
+  .method>div { grid-template-columns: 1fr; }
+  .method article { padding: 14px; }
+  .analysis { padding: 19px; }
+  .slot { height: 79px; }
+  .dialog { height: min(780px, calc(100dvh - 16px)); }
+  .dialog #results { overscroll-behavior: contain; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  button { transition: none; }
+}
