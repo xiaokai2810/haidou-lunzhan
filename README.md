@@ -1,23 +1,16 @@
 # 海斗论战 · Mayhem Lab
 
-[在线体验](https://xiaokai2810.github.io/haidou-lunzhan/) · [GitHub 仓库](https://github.com/xiaokai2810/haidou-lunzhan)
+[构筑实验室](https://xiaokai2810.github.io/haidou-lunzhan/) · [独立文字游戏：海斗战记](https://xiaokai2810.github.io/haidou-zhanji/) · [游戏源码](https://github.com/xiaokai2810/haidou-zhanji)
 
-海克斯大乱斗构筑、5v5 文字战役与虚拟对战工具。选择英雄和装备，经历随机强化与战术抉择；也可以自由配置最多 4 个海克斯、6 件装备，查看面板评分、进行 1v1 比拼或挑战五名发育落后的人机。所有推演在浏览器本地完成，构筑可通过 URL 分享。
+海克斯大乱斗构筑和虚拟对战工具。自由选择英雄、最多 4 个海克斯和 6 件装备，查看面板评分，进行 1v1 构筑比拼或挑战五名发育落后的人机。构筑可通过 URL 分享，推演在浏览器本地完成。随机英雄卡、装备经营和多轮团战的互动文字玩法已迁至独立的「海斗战记」站点。
 
-## 主要功能
+## 功能
 
-- **构筑分析**：173 名英雄、195 个强化、122 件装备。可调整等级、目标双抗并查看面板及未建模效果覆盖率。
-- **成长数据**：手动输入赛末层数，或导入真实对局 CSV，按每个成长项目所有有效记录取算术平均；数据只存于本地浏览器。
-- **5v5 文字战役**：匹配四名队友和五名对手，在开局及 7、11、15 级的四轮交锋中从三张候选卡选择海克斯；每轮可将整组刷新一次。当前构筑的英雄与装备带入战役，手动配置的海克斯由局内抽取取代。商店支持购买和出售；突进后排、稳住前排、叠心之钢、保护主力四种打法会改变目标、承伤、成长或团队保护。团战过程、回合比分和最终胜负均可查看，进度自动保存在浏览器本地。
-- **1v1 构筑对决**：选择预设对手，或让另一位玩家分享本站构筑链接并粘贴导入。结果展示有效输出、剩余生命和触发的职业/英雄机制修正。
-- **1v5 人机挑战**：自由选择五名不同英雄作为人机。每名人机比玩家低 4 级、只有 1 件按职业分配的装备且没有海克斯；页面展示胜负、击败数量、伤害与每名人机状态。
-- **自适应界面**：手机上将构筑分析置于虚拟对战之前；等级滑块拖动时保持操作连续，松开后更新完整推演。
-
-### 文字战役与官方玩法的关系
-
-[Riot 模式介绍](https://www.leagueoflegends.com/en-us/news/game-updates/patch-25-21-notes/)明确了开局及 7、11、15 级的强化选择节点。当前模式的重掷实际上是[每张候选卡各有一次机会](https://www.leagueoflegends.com/en-gb/news/game-updates/league-of-legends-patch-26-9-notes/)；本站应玩家要求将它改编为**每轮整组三张刷新一次**。Riot 还会按英雄调整候选池，但公开目录没有真实发牌概率或完整适配权重，所以本站的随机权重、金币收益、战术事件与每次心之钢叠层数值均是文字游戏规则，不代表实际对局。
-
-为让带装入局的构筑仍有可玩的难度，四名队友与五名对手会按玩家带入的装备件数获得相近的起始配装，并在后续回合补充装备。候选稀有度由固定种子随机决定，同稀有度内的选取率只作为很小的偏好；它是玩家选取率，**不是发牌概率**。角色属性和少量可量化强化进入战斗公式，无法量化的强化会产生有上限的小幅规则加成，并在战报中标明。
+- **构筑分析**：当前静态快照包含 173 名英雄、195 个海克斯和 196 条装备资料。构筑选择器展示当前可购买的成装与鞋子；可调整等级、目标双抗并查看面板及强化建模覆盖率。
+- **成长数据**：手动输入赛末层数，或导入自己的真实对局 CSV，按成长项目取有效记录的算术平均。文件只在浏览器中处理。
+- **1v1 对决**：选择示例对手，或导入另一位玩家分享的构筑链接。结果展示有效输出、剩余生命和触发的规则修正。
+- **1v5 人机挑战**：自由选择五名不同英雄作为人机。人机低 4 级、只有 1 件按职业分配的装备且没有海克斯；页面展示胜负、击败数量、伤害与各人机状态。
+- **海斗战记入口**：从首页进入[独立文字游戏](https://xiaokai2810.github.io/haidou-zhanji/)，体验两张随机英雄卡与备选席、海克斯三选一、183 件可购买装备、三阶段团战决策及战后经济。
 
 ## 开发与部署
 
@@ -28,26 +21,18 @@ npm test
 npm run build
 ```
 
-推送到 `main` 后，GitHub Actions 运行测试、构建并发布到 GitHub Pages。仓库路径配置在 `vite.config.js` 中。
+推送到 `main` 后，GitHub Actions 运行测试、构建并发布到 GitHub Pages。`public/data/` 是随仓库发布的静态快照。更新时核对 `scripts/fetch-data.sh` 使用的版本和 `public/data/meta.json` 的发布 ID，再运行 `bash scripts/fetch-data.sh`。脚本校验 Data Dragon 版本及 Mayhem 目录的同一发布 ID。
 
-`public/data/` 是随仓库发布的静态快照。更新时先核对 `scripts/fetch-data.sh` 的三个版本号，再运行 `bash scripts/fetch-data.sh`；脚本会校验 Data Dragon 版本及 Mayhem 索引、强化和物品目录的同一发布 ID。若官方数据源更新版本，须同步检查构筑公式和模式专属改动。`public/data/meta.json` 记录快照版本、日期、来源和条目数。
-
-## 数据口径
+## 数据与计算口径
 
 | 数据 | 当前快照与来源 | 用途 |
 | --- | --- | --- |
-| 英雄、装备静态属性 | Riot [Data Dragon 16.20.1](https://ddragon.leagueoflegends.com/api/versions.json) | 等级成长与基础面板 |
+| 英雄、装备静态属性 | Riot [Data Dragon 16.20.1](https://ddragon.leagueoflegends.com/api/versions.json) | 英雄成长、物品价格和基础面板 |
 | 海克斯目录、稀有度、选取率 | [ARAMMayhem 26.20 开放数据](https://arammayhem.com/data/)，CC BY 4.0；统计截至 2026-10-11 | 可选目录与参考选取率 |
-| 强化文案与图标 | [ARAMKit](https://aramkit.cn/zh-CN)、[CommunityDragon](https://raw.communitydragon.org/16.20/)、经验证的 ARAMMayhem 图标 | 效果说明和界面素材 |
-| 模式改动 | [Riot 26.20 补丁说明](https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-20-notes/) | 版本核对及限制说明 |
+| 强化文案与图标 | [ARAMKit](https://aramkit.cn/zh-CN)、[CommunityDragon](https://raw.communitydragon.org/16.20/)、ARAMMayhem 图标 | 效果说明和界面素材 |
+| 模式改动 | [Riot 26.20 补丁说明](https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-20-notes/) | 版本核对 |
 
-开放数据只发布选取率，不含组合或英雄对位胜率。Riot 的公开 Match-v5 目前也[不提供 Mayhem 逐场详情](https://github.com/RiotGames/developer-relations/issues/1109)，因此本站不会把对战结果写成实测胜率或全服预测。当前 195 个强化中，187 个有可核对的说明，147 个有可核对的图标；缺失项保留文字/首字占位，不拼造素材链接。
-
-### 对战模型
-
-推演使用英雄等级面板、装备可量化属性、已建模强化、目标护甲/魔抗和穿透计算持续输出与承伤。职业关系提供 **6%–12%** 的小幅规则修正；少数官方技能机制提供 **5%–8%** 的额外修正，例如[亚索风墙](https://www.leagueoflegends.com/en-us/champions/yasuo/)对飞行道具，以及[特朗德尔](https://www.leagueoflegends.com/en-us/champions/trundle/)对高双抗目标。结果会展示触发的规则。
-
-1v5 在同一模型下加入目标切换、按职业估算的范围伤害、敌方控制影响和人机协同效率；这些系数是明确写在代码里的玩法假设，不来自实测胜率。技能释放时机、控制链、召唤师技能、条件被动及海斗专属平衡未完整建模，实战结果可能不同。
+[海斗战记](https://github.com/xiaokai2810/haidou-zhanji)使用同一数据快照，并明确区分官方资料和本站设计的随机、经济、战术及联动规则。开放数据没有组合或英雄对位胜率；本站结果是启发式模拟，不代表实战胜率。职业关系提供 6%–12% 的小幅手工修正，部分可核对的英雄机制另有 5%–8% 的规则修正。技能时机、控制链、条件被动和模式专属平衡未完整建模。
 
 ### 成长项目
 
@@ -60,6 +45,6 @@ game-002,phenomenal_evil,107
 game-003,3084,492
 ```
 
-支持的成长 ID 见 `src/model.js` 的 `GROWTH`。导入时过滤非数值与负值，对相同 ID 的有效记录取平均；文件不上传。
+支持的成长 ID 见 `src/model.js` 的 `GROWTH`。导入时过滤非数值与负值，对同一 ID 的有效记录取平均；文件不上传。
 
 本站为非官方爱好者项目，未获 Riot Games 背书。游戏名称和素材归 Riot Games 所有。

@@ -39,3 +39,32 @@ test('published effect text omits live counters and known incorrect cooldowns', 
   assert.doesNotMatch(byId.spell_split.effect, /在命中时/);
   assert.match(byId.shrink_engine.effect, /10 技能急速和 2%/);
 });
+
+test('the Mayhem shop includes components and only currently purchasable entries', () => {
+  const byId = new Map(items.map(item => [item.id, item]));
+  assert.equal(byId.size, items.length);
+  assert.ok(items.length >= 190);
+  assert.deepEqual(
+    new Set(items.map(item => item.category)),
+    new Set(['legendary', 'component', 'starter', 'boots', 'consumable', 'evolved', 'special']),
+  );
+  assert.ok(items.every(item => typeof item.purchasable === 'boolean'));
+  assert.ok(items.every(item => Array.isArray(item.from) && Array.isArray(item.into)));
+  assert.ok(items.every(item => item.from.every(id => typeof id === 'string')));
+  assert.ok(items.every(item => item.into.every(id => typeof id === 'string')));
+  assert.ok(items.every(item => item.gold >= 0));
+  assert.ok(items.filter(item => item.category === 'component').length >= 50);
+  for (const item of items.filter(item => item.purchasable && item.from.length)) {
+    assert.ok(item.from.every(id => byId.has(id)), `${item.name} has an unavailable recipe component`);
+  }
+  if (meta.patch !== '26.20') return;
+  assert.equal(byId.get('3095')?.name, '岚切');
+  assert.ok(!byId.has('3097'));
+  assert.ok(!byId.has('2520')); // Bastionbreaker was disabled on ARAM.
+  assert.ok(!byId.has('6701'));
+  assert.ok(!byId.has('3002'));
+  assert.equal(byId.get('2522')?.gold, 2800); // Riot's 26.3 price, not stale catalog cost.
+  for (const id of ['2530', '3121', '3040', '3042', '994403', '228002']) {
+    assert.equal(byId.get(id)?.purchasable, false);
+  }
+});

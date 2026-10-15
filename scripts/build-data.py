@@ -54,15 +54,19 @@ for c in dd_champions['data'].values():
 dd_items = dd_items_file['data']
 items = []
 seen = set()
-for row in mayhem_items['rows']:
-    item_id = row.get('gameItemId')
-    source = dd_items.get(str(item_id))
-    if not item_id or not source or item_id in seen:
-        continue
-    # Full items and boots. The mode catalog is the availability gate.
-    if row.get('category') != 'legendary' and (row.get('cost') or 0) < 2200 and not row.get('category', '').startswith('boots'):
-        continue
-    seen.add(item_id)
+
+# The community catalog has a few stale rows: Stormrazor's old game ID, a
+# disabled ARAM item, and items whose Riot data says they are out of the shop.
+# The matching Riot Data Dragon item data is the authority for prices, recipes and ARAM map
+# availability. A catalog entry alone is not proof that an item can be bought.
+catalog_id_overrides = {'3097': '3095'}  # Stormrazor, Riot's current ID
+reward_only_items = {'994403', '228002'}  # Golden Spatula / Wooglet quest rewards
+evolved_items = {'2530': '2526', '3121': '3119', '3040': '3003', '3042': '3004'}
+evolved_english = {'3040': "Seraph's Embrace", '3042': 'Muramana'}
+excluded_catalog_categories = {'trinket'}
+excluded_catalog_ids = {'3600'}  # Kalista's Black Spear is champion-specific
+
+def build_item(item_id, source, english, category, purchasable, evolves_from=None):
     stat_block = re.search(r'<stats>(.*?)</stats>', source.get('description', ''), re.S)
     stat_text = plain(stat_block.group(1)) if stat_block else ''
     def listed(pattern):
@@ -77,14 +81,60 @@ for row in mayhem_items['rows']:
         'critPct': listed(r'(\d+(?:\.\d+)?)%\s*暴击几率'),
         'moveFlat': listed(r'(\d+(?:\.\d+)?)\s*移动速度'),
     }
-    items.append({
-        'id': item_id, 'name': source['name'], 'english': row['name']['en'],
-        'category': 'boots' if row.get('category', '').startswith('boots') else 'legendary',
+    result = {
+        'id': item_id, 'name': source['name'], 'english': english,
+        'category': category, 'purchasable': purchasable,
         'tags': source.get('tags', []), 'gold': source['gold']['total'],
+        'from': source.get('from', []), 'into': source.get('into', []),
         'stats': source.get('stats', {}), 'extras': extras,
         'description': plain(source.get('description', '')),
         'icon': f'{dd_root}/img/item/{item_id}.png',
-    })
+    }
+    if evolves_from:
+        result['evolvesFrom'] = evolves_from
+    return result
+
+for row in mayhem_items['rows']:
+    catalog_id = row.get('gameItemId')
+    item_id = catalog_id_overrides.get(str(catalog_id), str(catalog_id))
+    source = dd_items.get(item_id)
+    if not catalog_id or not source or item_id in seen:
+        continue
+    if row.get('category') in excluded_catalog_categories or catalog_id in excluded_catalog_ids:
+        continue
+    if not source.get('maps', {}).get('12'):
+        continue
+    if item_id in reward_only_items:
+        category, purchasable = 'special', False
+    elif item_id in evolved_items:
+        category, purchasable = 'evolved', False
+    elif not source.get('gold', {}).get('purchasable') or source.get('inStore') is False:
+        continue
+    elif row.get('category', '').startswith('boots'):
+        category, purchasable = 'boots', True
+    elif row.get('category') == 'starter':
+        category, purchasable = 'starter', True
+    elif row.get('category') == 'consumable':
+        category, purchasable = 'consumable', True
+    elif row.get('category') in ('basic', 'epic') and source['gold']['total'] < 2200:
+        category, purchasable = 'component', True
+    else:
+        category, purchasable = 'legendary', True
+    seen.add(item_id)
+    items.append(build_item(item_id, source, row['name']['en'], category,
+                            purchasable, evolved_items.get(item_id)))
+
+# Muramana and Seraph's Embrace are upgrade outcomes omitted by the community
+# catalog, but they are still present on Riot's ARAM map and grow from items in
+# this catalog. Include them for builds, never as direct shop purchases.
+for item_id, precursor_id in evolved_items.items():
+    if item_id in seen:
+        continue
+    source = dd_items.get(item_id)
+    if not source or not source.get('maps', {}).get('12') or source.get('gold', {}).get('purchasable'):
+        continue
+    seen.add(item_id)
+    items.append(build_item(item_id, source, evolved_english[item_id], 'evolved', False, precursor_id))
 
 def normalized(value):
     return re.sub(r'[^a-z0-9]', '', value.lower())
@@ -147,7 +197,7 @@ rows = [r for r in mayhem_augments['rows'] if not r.get('retiredPatch')]
 previous_path = OUT / 'augments.json'
 previous_meta_path = OUT / 'meta.json'
 previous_meta = json.loads(previous_meta_path.read_text()) if previous_meta_path.exists() else {}
-same_patch_cache = previous_meta.get('patch') == patch and previous_meta.get('releaseId') == release_id
+same_patch_cache = previous_meta.get('patch') == patch
 previous = {a['id']: a for a in json.loads(previous_path.read_text())} if same_patch_cache and previous_path.exists() else {}
 allow_fetch = os.environ.get('MAYHEM_FETCH_EFFECTS') == '1'
 def cached_effect(row):
