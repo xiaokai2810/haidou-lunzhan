@@ -105,7 +105,7 @@ function resultPve(result) {
 function render() {
   if (!root) return;
   const mode = current.mode;
-  root.innerHTML = `<div class="battle-top"><div><span class="eyebrow">06 / BATTLE SIMULATOR</span><h2>虚拟对战试炼</h2><p>用当前构筑进入对决。每次推演完全可复现，克制加成会列出触发原因。</p></div><div class="battle-emblem">✦</div></div><div class="battle-tabs">${Object.entries(LABELS).map(([key,label])=>`<button data-mode="${key}" class="${mode===key?'active':''}">${label}</button>`).join('')}</div><div class="battle-body">${mode==='duel'?duelControls():pveControls()}${current.error?`<p class="battle-error" role="alert">${html(current.error)}</p>`:''}${current.notice?`<p class="battle-notice" role="status">${html(current.notice)}</p>`:''}${current.result&&current.resultMode===mode?(mode==='duel'?resultDuel(current.result):resultPve(current.result)):''}</div><div class="battle-footer">RULE-BASED SIMULATION <span>非实战胜率预测</span></div>`;
+  root.innerHTML = `<div class="battle-top"><div><span class="eyebrow">05 / BATTLE SIMULATOR</span><h2>虚拟对战试炼</h2><p>用当前构筑进入对决。每次推演完全可复现，克制加成会列出触发原因。</p></div><div class="battle-emblem">✦</div></div><div class="battle-tabs">${Object.entries(LABELS).map(([key,label])=>`<button data-mode="${key}" class="${mode===key?'active':''}">${label}</button>`).join('')}</div><div class="battle-body">${mode==='duel'?duelControls():pveControls()}${current.error?`<p class="battle-error" role="alert">${html(current.error)}</p>`:''}${current.notice?`<p class="battle-notice" role="status">${html(current.notice)}</p>`:''}${current.result&&current.resultMode===mode?(mode==='duel'?resultDuel(current.result):resultPve(current.result)):''}</div><div class="battle-footer">RULE-BASED SIMULATION <span>非实战胜率预测</span></div>`;
   bind();
 }
 function bind() {
